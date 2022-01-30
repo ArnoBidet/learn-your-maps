@@ -1,6 +1,5 @@
 import { Component, Input, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import { DataSubjectService } from 'src/app/shared/services/map-specific/data-subject.service';
-import { StringFactory } from 'src/app/shared/utils/factories/string.factory';
 import { Area } from '../../../../utils/interfaces/map-oriented/area';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 
@@ -88,15 +87,6 @@ export class AreaTableComponent implements OnInit {
 	 */
 	isRowColored(rowidentifier : string ): boolean{
 		return this.expandedElement?.num == rowidentifier;
-	}
-
-	/**
-	 * Replace accented char by their ascii equivalent. To lower case and space replaced by hyphen.
-	 * @param str : A string to normalise
-	 * @returns The normalized string
-	 */
-	replaceSpecialChars(str : string): string{
-		return new StringFactory().replaceSpecialChars(str);
 	}
 
 	/**

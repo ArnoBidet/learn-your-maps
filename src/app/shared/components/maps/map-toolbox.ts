@@ -3,8 +3,8 @@ import { DataSubjectService } from "../../services/map-specific/data-subject.ser
 import { Area } from "../../utils/interfaces/map-oriented/area";
 import { NodeSubjectService } from "../../services/map-specific/node-subject.service";
 import { InputSubjectService } from "../../services/game-mode-specific/input-subject.service";
-import { StringFactory } from "../../utils/factories/string.factory";
 import { Subscription } from "rxjs";
+import { replaceSpecialChars } from "../../utils/utils/string-util";
 
 
 
@@ -116,8 +116,7 @@ export class MapToolbox implements OnInit {
      * @returns Le département ou undefined
      */
     getAreaByName(input_area_name : string) : Area {
-        let stringFactory = new StringFactory();
-        let result = this.data.find(({ name }) => stringFactory.replaceSpecialChars(input_area_name) == stringFactory.replaceSpecialChars(name));
+        let result = this.data.find(({ name }) => replaceSpecialChars(input_area_name) == replaceSpecialChars(name));
         if(result){// Si on a bien une valeur.
             this.dataSubjectService.setCurrentDataValue(result);
         }
@@ -130,9 +129,8 @@ export class MapToolbox implements OnInit {
      * @returns 
      */
     getAreasFromZone(zone_name : string) {
-        let stringFactory = new StringFactory();
         return this.data.filter(({ name }) => {
-            ( stringFactory.replaceSpecialChars(name) ==  stringFactory.replaceSpecialChars(zone_name));
+            (replaceSpecialChars(name) ==  replaceSpecialChars(zone_name));
         });
     }
 
