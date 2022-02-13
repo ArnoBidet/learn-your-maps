@@ -1,11 +1,11 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
-import { DataSubjectService } from 'src/app/shared/services/map-specific/data-subject.service';
+import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SnackBarComponent } from '../../generic/templates/snack-bar/snack-bar.component';
+import { GameStatus } from 'src/app/shared/utils/enums/GameStatus.enum';
 import { NodeSubjectService } from 'src/app/shared/services/map-specific/node-subject.service';
 import { InputSubjectService } from 'src/app/shared/services/game-mode-specific/input-subject.service';
-import { GameStatus } from 'src/app/shared/utils/enums/GameStatus.enum';
-import { Subscription } from 'rxjs';
+import { DataSubjectService } from 'src/app/shared/services/map-specific/data-subject.service';
 
 @Component({
     selector: 'app-find-area',
@@ -74,27 +74,20 @@ export class FindAreaComponent implements OnInit {
      * @param value : La valeur de l'input.
      */
     inputChanged(value : string){
-        if(this.dataSubjectService.isValidData(value)){
-            if(!this.dataSubjectService.isInFinalData(value)){
-                this.inputSubjectService.setInputValue(value);
-                this.dataSubjectService.addDataToFinalDataFromName(value);
-                // @TODO REFA, possible duplicata
-                this.clearInput();
-            }else{ 
-                // Si il n'existe pas un nom allant plus loin en prenant la même base, alors on affiche au joueur qu'il a déjà trouvé cette valeur.
-                if(!this.dataSubjectService.extendedNameExist(value)){
-                    let snackMessage = "Vous avez déjà trouvé : "+value;
-                    this.clearInput();
-                    this._snackBar.openFromComponent(
-                        SnackBarComponent,
-                        {
-                            data : {message:snackMessage ,action:"Okay..."}, // Message et message du bouton
-                            duration: 2000, // Durée de deux secondes
-                            panelClass: ['warn']
-                    });
-                }
-            }
-        }  
+        if(!this.dataSubjectService.isValidData(value)) return; // if data is not valid then stop
+
+        if(!this.dataSubjectService.isInFinalData(value)){
+            this.inputSubjectService.setInputValue(value);
+            this.dataSubjectService.addDataToFinalDataFromName(value);
+            // @TODO REFA, possible duplicata
+            this.clearInput();
+        }else{ 
+            if(this.dataSubjectService.extendedNameExist(value)) return; // if an extanded version of the value exists, then stop. Else, show the user the value he already found
+            this.clearInput();
+            let snackMessage = "Vous avez déjà trouvé : "+value;
+            this._snackBar.openFromComponent(SnackBarComponent,{data : {message:snackMessage ,action:"Okay..."},duration: 2000,panelClass: ['warn']});
+        }
+        
     }
 
     /**

@@ -1,4 +1,5 @@
 import { Component, HostBinding, HostListener, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameStatus } from 'src/app/shared/utils/enums/GameStatus.enum';
 import { GameModeMetaData } from 'src/app/shared/utils/interfaces/game-oriented/game-mode-meta-data.interface';
@@ -20,15 +21,22 @@ export class InputAgainstTimeComponent implements OnInit {
   // Object made available to template
   public GameStatus = GameStatus;
   // Atttributes used in Input
-  public mapMetaData : MapMetaData = MapsType.MAPS_LIST[0];
 	public gameModeMetadata : GameModeMetaData =  GameModeType.GAME_INPUT;
   // Attributes in a two way binding
   public gameStatus : GameStatus = GameStatus.START;
   // Data storage for scenes transition
   public finalData : Area[] = [];
-  public currentData : Area | undefined = undefined;
+  // public currentData : Area | undefined = undefined;
 
   public isSmallDevice : boolean = false;
+
+  public dataModel : FormGroup = new FormGroup({
+      mapMetaData : new FormControl(),
+      sourceData : new FormControl(MapsType.MAPS_LIST[0]),
+      foundData : new FormControl(),
+      currentValue : new FormControl(''),
+      lastFound : new FormControl()
+  });
 
   constructor(protected route: ActivatedRoute,
               protected router: Router) {
@@ -49,8 +57,8 @@ export class InputAgainstTimeComponent implements OnInit {
    * @param gamestatus The GameStatus to check
    * @returns True if the given GameStatus is equal to the current one
    */
-  checkCurrentGameStatus(gameStatus: GameStatus): boolean {    
-		return this.gameStatus == gameStatus;
+  isCurrentGameStatus(gameStatus: GameStatus[]): boolean {
+		return  gameStatus.some(e => this.gameStatus == e);
   }
   /**
    * Handles the start button and allows to change screen
@@ -88,7 +96,12 @@ export class InputAgainstTimeComponent implements OnInit {
 		// If the values are correct ones, then we process them, else we redirect to choosing page with an error snackbar
 		if(MapsType.isValidType(map)){
 			// On force l'affectation car la vérification précédente assure que les données sont valides
-			this.mapMetaData = MapsType.getTypeFromIdentifier(map)!;
+      
+      this.dataModel.patchValue(
+      {
+        mapMetaData : MapsType.getTypeFromIdentifier(map),
+        sourceData :  MapsType.getTypeFromIdentifier(map)?.data
+      });
 		}else{
 			this.router.navigate(['/maps']);
 		}

@@ -9,6 +9,7 @@ import { MapMetaData } from 'src/app/shared/utils/interfaces/map-oriented/map-me
 import { MapsType } from 'src/app/shared/utils/types/maps.type';
 import { Area } from 'src/app/shared/utils/interfaces/map-oriented/area';
 import { Subscription } from 'rxjs';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-input-against-time-scene',
@@ -21,7 +22,6 @@ export class InputAgainstTimeSceneComponent implements OnInit {
 	public finalData : Area[] = [];
 
 	// Input attributes
-	@Input() sourceData :  Area[] = [];
 	@Input() gameModeMetadata : GameModeMetaData = GameModeType.GAME_CONSULT;
 	@Input() mapMetaData : MapMetaData = MapsType.MAP_DEPARTEMENTS_FRANCE;
 	@Input() isSmallDevice : boolean = false;
@@ -30,6 +30,8 @@ export class InputAgainstTimeSceneComponent implements OnInit {
 	@Output() gameStatusChange : EventEmitter<GameStatus> = new EventEmitter<GameStatus>();
 	// Output attributes
 	@Output() finalDataChange : EventEmitter<Area[]> = new EventEmitter<Area[]>();
+
+	@Input()  dataModel! : FormGroup;
   
   	// Data storage for child component data sharing
 	public currentData : Area | undefined = undefined;
@@ -46,9 +48,10 @@ export class InputAgainstTimeSceneComponent implements OnInit {
 
 
 	ngOnInit(): void {
-		this.dataSubjectService.setsourceDataValue(this.sourceData);
-		this.timerService.setUpperBound( this.sourceData.length * this.timerPerValue);
-    	this.currentTimerValue = this.sourceData.length * this.timerPerValue;
+		this.dataSubjectService.setsourceDataValue(this.dataModel.get('sourceData')?.value);
+		
+		this.timerService.setUpperBound( this.dataModel.get('sourceData')?.value.length * this.timerPerValue);
+    	this.currentTimerValue = this.dataModel.get('sourceData')?.value.length * this.timerPerValue;
 		this.onPlaying();
 		// @TODO REMOVE
 		document.addEventListener('keydown',this.processKeyDown.bind(this));

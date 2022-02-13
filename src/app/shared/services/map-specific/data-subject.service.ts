@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { StringFactory } from 'src/app/shared/utils/factories/string.factory';
-import { GameStatus } from '../../utils/enums/GameStatus.enum';
+import { addDataToFinalDataFromName, checkIfAllDataFound, extendedNameExist, isInFinalData, isValidData, removeAllDataFromFinalData } from '../../utils/utils/game-data.util';
+import { compareNormalizedStrings, replaceSpecialChars } from '../../utils/utils/string-util';
 
 @Injectable({
     providedIn: 'root'
@@ -59,19 +59,14 @@ export class DataSubjectService {
         this.currentDataChange.next(obj);
     }
     /**
-   * Permet d'ajouter un objet à la liste des données actuels à partir du nom de celui-ci
-   * Also check if all the data has been found, if so, then set the game status to "WON"
-   * @param obj 
-   */
-     public addDataToFinalDataFromName(name : string) : void{
-        let stringFactory = new StringFactory()
-        let result = this.sourceData.find((value) => stringFactory.replaceSpecialChars(name) == stringFactory.replaceSpecialChars(value.name)); 
-        this.addDataToFinalData(result);
-    }
-    /**
-     * Permet d'ajouter un objet à la liste des données actuels.
+     * Permet d'ajouter un objet à la liste des données actuels à partir du nom de celui-ci
+     * Also check if all the data has been found, if so, then set the game status to "WON"
      * @param obj 
      */
+     public addDataToFinalDataFromName(name : string) : void{
+        addDataToFinalDataFromName(this.sourceData, this.finalData, name);
+    }
+    
     /**
      * Add an object to the found data list. Also check if the player won.
      * @param obj 
@@ -95,8 +90,8 @@ export class DataSubjectService {
      * @param obj 
      */
      public removeAllDataFromFinalData() : void{
-        this.finalData = [];
-        this.finalDataChange.next(this.finalData);
+        removeAllDataFromFinalData(this.finalData);
+        this.finalDataChange.next([]);
     }
 
     /**
@@ -112,7 +107,7 @@ export class DataSubjectService {
      * @returns Vrai si l'objet est dans la liste, faux sinon.
      */
      public isValidData(name : string) : boolean{
-        return this.sourceData.find((value)=>{return new StringFactory().compareNormalizedStrings(value.name , name)});
+        return isValidData(this.sourceData, name);
     }
     /**
      * Permet de savoir si l'objet donné figure déjà parmis les données trouvées.
@@ -120,9 +115,7 @@ export class DataSubjectService {
      * @returns Vrai si l'objet est dans la liste, faux sinon.
      */
      public isInFinalData(name : string) : boolean{
-        return this.finalData.find((value)=>{
-            return new StringFactory().compareNormalizedStrings(value.name , name)
-        });
+        return isInFinalData(this.finalData, name);
     }
 
     /**
@@ -131,12 +124,8 @@ export class DataSubjectService {
      * @param name : A name, of anything
      * @returns True if one or more exists
      */
-     public extendedNameExist(name : string) : boolean{
-        let stringFactory = new StringFactory()
-        var regex = new RegExp('^'+stringFactory.replaceSpecialChars(name)+'.+');
-        return this.sourceData.find((value)=>{
-            return stringFactory.replaceSpecialChars(value.name).match(regex);
-        });
+    public extendedNameExist(name : string) : boolean{
+        return extendedNameExist(this.sourceData, name);
     }
 
     /**
@@ -152,7 +141,7 @@ export class DataSubjectService {
      * @returns 
      */
     public checkIfAllDataFound() : boolean{
-        return this.sourceData.length == this.finalData.length;
+        return checkIfAllDataFound(this.sourceData, this.finalData);
     }
 
     /**

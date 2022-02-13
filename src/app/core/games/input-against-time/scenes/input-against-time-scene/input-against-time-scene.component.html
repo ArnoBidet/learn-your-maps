@@ -14,8 +14,8 @@
     </div>
     <div class="header">
         <mat-card>
-            <mat-card-title> {{ mapMetaData.map_country }} - {{ mapMetaData.map_name }}</mat-card-title>
-            <mat-card-subtitle>{{ mapMetaData.map_details }}</mat-card-subtitle>
+            <mat-card-title> {{ dataModel.get('mapMetaData')?.value.map_country }} - {{ dataModel.get('mapMetaData')?.value.map_name }}</mat-card-title>
+            <mat-card-subtitle>{{ dataModel.get('mapMetaData')?.value.map_details }}</mat-card-subtitle>
         </mat-card>
     </div>
     <div class="top-right-sidenav">
@@ -106,44 +106,44 @@
     </app-side-menu>
 
     <div class="progress">
-        <ng-container *ngTemplateOutlet="timer "></ng-container>
-        <ng-container *ngTemplateOutlet="progress "></ng-container>
+        <ng-container *ngTemplateOutlet="timer"></ng-container>
+        <ng-container *ngTemplateOutlet="progress"></ng-container>
     </div>
     <div class="side-button" mat-ripple (click)="displaySideMenu = !displaySideMenu">
         &lt;
     </div>
-    <div class="side ">
+    <div class="side">
 
     </div>
-    <ng-container *ngTemplateOutlet="map "></ng-container>
-    <!-- <ng-container *ngTemplateOutlet="table "></ng-container> -->
-    <ng-container *ngTemplateOutlet="find_area "></ng-container>
+    <ng-container *ngTemplateOutlet="map"></ng-container>
+    <!-- <ng-container *ngTemplateOutlet="table"></ng-container> -->
+    <ng-container *ngTemplateOutlet="find_area"></ng-container>
 </ng-template>
 
 <!-- Generique templates -->
 <ng-template #mapmetadata>
-    <h2> {{ mapMetaData.map_country }} - {{ mapMetaData.map_name }}</h2>
-    <p>{{ mapMetaData.map_details }}</p>
+    <h2> {{ this.dataModel.get('mapMetaData')?.value.map_country }} - {{ this.dataModel.get('mapMetaData')?.value.map_name }}</h2>
+    <p>{{ this.dataModel.get('mapMetaData')?.value.map_details }}</p>
 </ng-template>
 <ng-template #gamemode>
     <h2> {{ gameModeMetadata.game_mode_name }}</h2>
      <p>{{ gameModeMetadata.game_mode_rules }}</p>
 </ng-template>
 <ng-template #controller>
-    <app-game-controller style="margin: 0.5rem; " [gameStatus]="gameStatus " (gameStatusChange)="setGameStatus($event) "></app-game-controller>
+    <app-game-controller style="margin: 0.5rem;" [gameStatus]="gameStatus" (gameStatusChange)="setGameStatus($event)"></app-game-controller>
 </ng-template>
 <ng-template #timer>
-    <app-timer-tracker [currentTimerValue]="currentTimerValue " [upperBound]="sourceData.length * timerPerValue "></app-timer-tracker>
+    <app-timer-tracker [currentTimerValue]="currentTimerValue" [upperBound]="this.dataModel.get('sourceData')?.value.length * timerPerValue"></app-timer-tracker>
 </ng-template>
 <ng-template #progress>
-    <app-progress-tracker [currentValue]="finalData.length " [upperBound]="sourceData.length "></app-progress-tracker>
+    <app-progress-tracker [currentValue]="finalData.length" [upperBound]="this.dataModel.get('sourceData')?.value.length"></app-progress-tracker>
 </ng-template>
 <ng-template #map>
-    <app-map [map]="mapMetaData " [data]="sourceData " [clickArea]="false "></app-map>
+    <app-map [map]="this.dataModel.get('mapMetaData')?.value" [data]="this.dataModel.get('sourceData')?.value" [clickArea]="false"></app-map>
 </ng-template>
 <ng-template #table>
-    <app-area-table  [inGameMode]="true " [dataSourceInput]="sourceData " [currentDataInput]="currentData "></app-area-table>
+    <app-area-table  [inGameMode]="true" [dataSourceInput]="this.dataModel.get('sourceData')?.value" [currentDataInput]="currentData"></app-area-table>
 </ng-template>
 <ng-template #find_area>
-    <app-find-area [gameStatus]="gameStatus "></app-find-area>
+    <app-find-area [gameStatus]="gameStatus"></app-find-area>
 </ng-template>

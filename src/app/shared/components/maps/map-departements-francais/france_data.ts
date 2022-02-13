@@ -15,7 +15,7 @@ export let france_data : Area[] = [
 		}
     },
     {
-        "iso_3166" : "	FR-02",
+        "iso_3166" : "FR-02",
         "num": "02",
         "name": "Aisne",
         "zone" : {
